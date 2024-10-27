@@ -10,10 +10,24 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarMenuAction,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Plus, MessageCircle, Trash2 } from "lucide-react";
+import {
+  Plus,
+  MessageCircle,
+  Trash2,
+  MoreHorizontal,
+  Pencil,
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { DropdownMenuContent } from "@radix-ui/react-dropdown-menu";
 
 interface ChatHistory {
   id: string;
@@ -54,6 +68,32 @@ export function ChatSidebar({
                     {chat.title}
                   </span>
                 </SidebarMenuButton>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <SidebarMenuAction>
+                      <MoreHorizontal />
+                    </SidebarMenuAction>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    className="bg-popover border shadow-sm rounded-md"
+                    side="right"
+                    align="start"
+                  >
+                    <DropdownMenuLabel className="text-xs text-muted-foreground w-[8rem]">
+                      Features below are not yet implemented {":))"}
+                    </DropdownMenuLabel>
+                    <DropdownMenuItem>
+                      <Pencil className="mr-2 h-4 w-4 flex-shrink-0" />
+                      <span>Rename</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="">
+                      <div className="flex items-center gap-2 text-red-500 hover:text-red-400">
+                        <Trash2 className="mr-2 h-4 w-4 flex-shrink-0" />
+                        <span>Delete</span>
+                      </div>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </SidebarMenuItem>
             ))}
           </SidebarMenu>
