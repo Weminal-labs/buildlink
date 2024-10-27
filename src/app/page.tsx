@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send } from "lucide-react";
-import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
+import { useSidebar } from "@/components/ui/sidebar";
 import { ChatSidebar } from "@/components/chat/chat-sidebar";
-
+import ChatHeader from "@/components/chat/chat-header";
 interface Message {
   id: string;
   content: string;
@@ -161,19 +161,7 @@ export default function ChatApp() {
         onSelectChat={handleSelectChat}
       />
       <div className="flex-1 flex flex-col h-full items-center">
-        <div className="flex justify-between items-center px-4 py-2 border-b w-full">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2">
-              <SidebarTrigger />
-              {!open && (
-                <h1 className="text-2xl font-bold text-sidebar-foreground">
-                  BuildLink
-                </h1>
-              )}
-            </div>
-          </div>
-          <Button variant="outline">Connect Wallet</Button>
-        </div>
+        <ChatHeader />
         <div
           className={`flex-1 flex flex-col overflow-hidden transition-all w-full  duration-700 ${
             open ? "" : "xl:w-[75vw]"
