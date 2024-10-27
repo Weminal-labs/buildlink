@@ -5,7 +5,6 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarGroup,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
@@ -28,7 +27,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DropdownMenuContent } from "@radix-ui/react-dropdown-menu";
-
+import BuildlinkLogo from "@/components/common/buildlink-logo";
 interface ChatHistory {
   id: string;
   title: string;
@@ -47,8 +46,8 @@ export function ChatSidebar({
 }: ChatSidebarProps) {
   return (
     <Sidebar className="w-64 border-r">
-      <SidebarHeader className="p-4">
-        <h1 className="text-2xl font-bold mb-4">BuildLink</h1>
+      <SidebarHeader className="p-4 flex flex-col items-center">
+        <BuildlinkLogo className="mb-4" />
         <Button className="w-full flex items-center gap-2" onClick={onNewChat}>
           <Plus size={16} />
           New Chat
@@ -99,7 +98,7 @@ export function ChatSidebar({
           </SidebarMenu>
         </ScrollArea>
       </SidebarContent>
-      <SidebarFooter className="p-4">
+      <SidebarFooter className="p-4 flex justify-center items-center">
         <ModeToggle />
       </SidebarFooter>
     </Sidebar>
