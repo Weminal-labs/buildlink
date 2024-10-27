@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -88,6 +88,8 @@ export default function ChatApp() {
     [chats, currentChatId]
   );
 
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
   const handleNewChat = () => {
     const newChat: Chat = {
       id: Date.now().toString(),
@@ -143,6 +145,14 @@ export default function ChatApp() {
     }
   };
 
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [currentChat?.messages]);
+
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       <ChatSidebar
@@ -184,6 +194,7 @@ export default function ChatApp() {
                 </div>
               </div>
             ))}
+            <div ref={messagesEndRef} />
           </ScrollArea>
           <div className="p-4 border-t">
             <div className="flex items-center">
