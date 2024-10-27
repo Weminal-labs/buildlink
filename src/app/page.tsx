@@ -180,7 +180,7 @@ export default function ChatApp() {
               <div
                 key={message.id}
                 className={`mb-4 ${
-                  message.sender === "user" ? "text-right" : "text-left"
+                  message.sender === "user" ? "flex justify-end" : "flex"
                 }`}
               >
                 <div
