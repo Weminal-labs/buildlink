@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -88,7 +88,7 @@ export default function ChatApp() {
     [chats, currentChatId]
   );
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
   const handleNewChat = () => {
     const newChat: Chat = {
@@ -149,7 +149,7 @@ export default function ChatApp() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     scrollToBottom();
   }, [currentChat?.messages]);
 
@@ -160,8 +160,8 @@ export default function ChatApp() {
         onNewChat={handleNewChat}
         onSelectChat={handleSelectChat}
       />
-      <div className="flex-1 flex flex-col h-full">
-        <div className="flex justify-between items-center px-4 py-2 border-b">
+      <div className="flex-1 flex flex-col h-full items-center">
+        <div className="flex justify-between items-center px-4 py-2 border-b w-full">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2">
               <SidebarTrigger />
@@ -174,8 +174,12 @@ export default function ChatApp() {
           </div>
           <Button variant="outline">Connect Wallet</Button>
         </div>
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <ScrollArea className="flex-1 p-4">
+        <div
+          className={`flex-1 flex flex-col overflow-hidden transition-all w-full  duration-700 ${
+            open ? "" : "xl:w-[75vw]"
+          }`}
+        >
+          <ScrollArea className="flex-1 p-4 transition-all duration-700">
             {currentChat?.messages.map((message) => (
               <div
                 key={message.id}
@@ -184,13 +188,20 @@ export default function ChatApp() {
                 }`}
               >
                 <div
-                  className={`inline-block p-2 rounded-lg max-w-md ${
+                  className={`message-bubble inline-block p-2 rounded-lg max-w-md ${
                     message.sender === "user"
                       ? "bg-primary text-primary-foreground"
-                      : "bg-muted"
+                      : "bg-muted hover:bg-muted/80"
                   }`}
                 >
-                  {message.content}
+                  {message.content.split("\n").map((line, index) => (
+                    <React.Fragment key={index}>
+                      {line}
+                      {index !== message.content.split("\n").length - 1 && (
+                        <br />
+                      )}
+                    </React.Fragment>
+                  ))}
                 </div>
               </div>
             ))}
