@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import "./globals.css";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { ChatSidebar } from "@/components/chat/chat-sidebar";
 import { ThemeProvider } from "next-themes";
+import { WalletProvider } from "@/components/providers/near-wallet-provider";
+import "@near-wallet-selector/modal-ui/styles.css";
+import "./globals.css";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -32,9 +34,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <SidebarProvider>
-            <main className="flex-1">{children}</main>
-          </SidebarProvider>
+          <WalletProvider>
+            <SidebarProvider>
+              <Toaster />
+              <main className="flex-1">{children}</main>
+            </SidebarProvider>
+          </WalletProvider>
         </ThemeProvider>
       </body>
     </html>
