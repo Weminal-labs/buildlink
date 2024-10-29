@@ -34,10 +34,11 @@ export default function NearWalletButton() {
     }
   };
 
-  const truncateAddress = (address: string) => {
-    if (!address) return "";
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
-  };
+  // Địa chỉ ví không quá dài để dùng cái này
+  //   const truncateAddress = (address: string) => {
+  //     if (!address) return "";
+  //     return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  //   };
 
   if (!accountId) {
     return <Button onClick={handleConnect}>Connect to NEAR</Button>;
