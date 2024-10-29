@@ -8,6 +8,11 @@ import { Send } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
 import { ChatSidebar } from "@/components/chat/chat-sidebar";
 import ChatHeader from "@/components/chat/chat-header";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { MOCK_CHAT } from "@/app/data";
+import { AutoResizeTextarea } from "@/components/common/auto-resize-textarea";
+
 interface Message {
   id: string;
   content: string;
@@ -22,64 +27,7 @@ interface Chat {
 
 export default function ChatApp() {
   const { open } = useSidebar();
-  const [chats, setChats] = React.useState<Chat[]>([
-    {
-      id: "1",
-      title: "What is NEAR Blockchain",
-      messages: [
-        {
-          id: "1",
-          content: "Can you explain what NEAR Blockchain is?",
-          sender: "user",
-        },
-        {
-          id: "2",
-          content:
-            "NEAR Protocol is a decentralized application platform designed to make apps usable on the web. It uses sharding technology to achieve scalability and is developer-friendly with features like human-readable account names instead of cryptographic wallet addresses.\n\nKey features of NEAR include:\n1. Proof-of-Stake consensus mechanism\n2. Sharding for scalability\n3. Low transaction fees\n4. Fast transaction finality\n5. Developer-friendly environment with WebAssembly-based smart contracts",
-          sender: "bot",
-        },
-        {
-          id: "3",
-          content: "How does it compare to Ethereum?",
-          sender: "user",
-        },
-        {
-          id: "4",
-          content:
-            "NEAR and Ethereum are both smart contract platforms, but they have some key differences:\n\n1. Scalability: NEAR uses sharding to achieve higher throughput, while Ethereum is still in the process of implementing sharding.\n2. Consensus: NEAR uses Proof-of-Stake, while Ethereum is transitioning from Proof-of-Work to Proof-of-Stake.\n3. Developer Experience: NEAR aims to be more developer-friendly with easier-to-use tools and languages.\n4. Account System: NEAR uses human-readable account names, while Ethereum uses cryptographic addresses.\n5. Gas Fees: NEAR generally has lower and more predictable transaction fees compared to Ethereum.\n\nBoth have their strengths and are continuously evolving.",
-          sender: "bot",
-        },
-      ],
-    },
-    {
-      id: "2",
-      title: "How Can I Stake on NEAR",
-      messages: [
-        {
-          id: "1",
-          content: "I want to stake my NEAR tokens. How can I do that?",
-          sender: "user",
-        },
-        {
-          id: "2",
-          content:
-            "Staking NEAR tokens is a great way to earn passive income and support the network. Here's a general guide on how to stake NEAR:\n\n1. Create a NEAR wallet: Visit wallet.near.org and set up an account.\n\n2. Acquire NEAR tokens: Buy NEAR from an exchange and transfer to your wallet.\n\n3. Choose a validator: Go to the 'Staking' tab in your NEAR wallet and select a validator.\n\n4. Stake your tokens: Enter the amount you want to stake and confirm the transaction.\n\n5. Wait for rewards: Staking rewards are distributed every epoch (about 12 hours).\n\nRemember, while staked, your tokens are locked. There's an unstaking period of about 3 days when you decide to withdraw.",
-          sender: "bot",
-        },
-        {
-          id: "3",
-          content: "Are there any risks involved in staking?",
-          sender: "user",
-        },
-        {
-          id: "4",
-          content:
-            "Yes, there are some risks to consider when staking NEAR:\n\n1. Slashing: If the validator you chose misbehaves, a portion of your staked tokens could be slashed (penalized).\n\n2. Opportunity cost: Your staked tokens are locked and can't be used for other purposes.\n\n3. Unbonding period: There's a delay when unstaking, during which you can't access your tokens or earn rewards.\n\n4. Market risk: The value of NEAR could decrease while your tokens are staked.\n\n5. Validator risk: If your chosen validator goes offline or stops validating, you'll stop earning rewards until you switch to a new validator.\n\nDespite these risks, many consider staking a relatively safe way to earn passive income in crypto. Always do your own research and only stake what you can afford to lock up.",
-          sender: "bot",
-        },
-      ],
-    },
-  ]);
+  const [chats, setChats] = React.useState<Chat[]>(MOCK_CHAT as any);
   const [currentChatId, setCurrentChatId] = React.useState<string | null>(null);
   const [inputMessage, setInputMessage] = React.useState("");
 
@@ -105,7 +53,6 @@ export default function ChatApp() {
   };
 
   const handleSendMessage = () => {
-    console.log("handleSendMessage called");
     if (inputMessage.trim() !== "") {
       let chatId = currentChatId;
       let updatedChats = [...chats];
@@ -136,9 +83,6 @@ export default function ChatApp() {
 
       setChats(updatedChats);
       setInputMessage("");
-
-      console.log("Updated chats:", updatedChats);
-      console.log("Current chat ID:", chatId);
 
       // Xử lý logic gửi message đến backend hoặc AI service
       // Sau đó thêm response vào mảng messages
@@ -176,20 +120,15 @@ export default function ChatApp() {
                 }`}
               >
                 <div
-                  className={`message-bubble inline-block p-2 rounded-lg max-w-md ${
+                  className={`message-bubble inline-block p-2 rounded-lg max-w-6xl  ${
                     message.sender === "user"
-                      ? "bg-primary text-primary-foreground"
+                      ? "bg-primary text-primary-foreground xl:max-w-3xl"
                       : "bg-muted hover:bg-muted/80"
                   }`}
                 >
-                  {message.content.split("\n").map((line, index) => (
-                    <React.Fragment key={index}>
-                      {line}
-                      {index !== message.content.split("\n").length - 1 && (
-                        <br />
-                      )}
-                    </React.Fragment>
-                  ))}
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {message.content}
+                  </ReactMarkdown>
                 </div>
               </div>
             ))}
@@ -197,14 +136,14 @@ export default function ChatApp() {
           </ScrollArea>
           <div className="p-4 border-t">
             <div className="flex items-center">
-              <Input
-                type="text"
+              <AutoResizeTextarea
                 placeholder="Type your message..."
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
-                className="flex-1 mr-2"
+                className="flex-1 resize-none mr-2 min-h-[40px] max-h-[120px]"
+                maxRows={5}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") {
+                  if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
                     handleSendMessage();
                   }
