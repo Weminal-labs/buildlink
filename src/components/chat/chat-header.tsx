@@ -1,5 +1,5 @@
 import BuildlinkLogo from "@/components/common/buildlink-logo";
-import { Button } from "@/components/ui/button";
+import NearWalletButton from "@/components/common/near-wallet-button";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 
 export default function ChatHeader() {
@@ -12,7 +12,7 @@ export default function ChatHeader() {
           {!open && <BuildlinkLogo />}
         </div>
       </div>
-      <Button>Connect Wallet</Button>
+      <NearWalletButton />
     </div>
   );
 }
