@@ -1,21 +1,19 @@
 "use client";
-
-import React from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
 import { ChatSidebar } from "@/components/chat/chat-sidebar";
 import ChatHeader from "@/components/chat/chat-header";
+import { AutoResizeTextarea } from "@/components/common/auto-resize-textarea";
+import { CustomMarkdown } from "@/components/common/custom-markdown";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { MOCK_CHAT } from "@/app/data";
-import { AutoResizeTextarea } from "@/components/common/auto-resize-textarea";
 
 interface Message {
   id: string;
-  content: string;
+  content: string | React.ReactNode;
   sender: "user" | "bot";
 }
 
@@ -25,18 +23,50 @@ interface Chat {
   messages: Message[];
 }
 
-export default function ChatApp() {
-  const { open } = useSidebar();
-  const [chats, setChats] = React.useState<Chat[]>(MOCK_CHAT as any);
-  const [currentChatId, setCurrentChatId] = React.useState<string | null>(null);
-  const [inputMessage, setInputMessage] = React.useState("");
+const KEYWORD = "NEAR";
 
-  const currentChat = React.useMemo(
+const ActionCard = ({ word }: { word: string }) => (
+  <div className="p-4 bg-primary text-primary-foreground rounded-lg">
+    <h3 className="font-bold mb-2">Action for: {word}</h3>
+    <p>This is a custom action for the keyword {word}.</p>
+  </div>
+);
+
+export default function EnhancedChatApp() {
+  const { open } = useSidebar();
+  const [chats, setChats] = useState<Chat[]>([
+    {
+      id: "1",
+      title: "Please give me the top protocol for staking on Near",
+      messages: [
+        {
+          id: "1",
+          content: "Please give me the top protocol for staking on Near",
+          sender: "user",
+        },
+        {
+          id: "2",
+          content: [
+            "# Top Protocols for Staking on NEAR\n\n",
+            "- **LiNEAR Protocol**: LiNEAR Protocol offers liquid staking on NEAR, enabling users to stake NEAR tokens and receive stNEAR tokens. This allows users to earn around 10% APY while still participating in NEAR's DeFi ecosystem with their staked tokens.\n\n",
+            "- **Meta Pool**: Meta Pool provides liquid staking on NEAR, allowing users to stake NEAR and receive stNEAR, a liquid staking token. Users can earn rewards of approximately 10% APY, and the protocol integrates well with NEAR-based DeFi platforms.\n\n",
+            "- **Everstake**: Everstake is a popular staking provider for NEAR, enabling users to delegate their tokens with a minimum of 5 NEAR and a maximum of 5,000 NEAR. This pool offers staking rewards and is known for its secure infrastructure and transparent operations.",
+          ].join(""),
+          sender: "bot",
+        },
+      ],
+    },
+  ]);
+  const [currentChatId, setCurrentChatId] = useState<string | null>("1");
+  const [inputMessage, setInputMessage] = useState("");
+  const [showActionTab, setShowActionTab] = useState(false);
+
+  const currentChat = useMemo(
     () => chats.find((chat) => chat.id === currentChatId),
     [chats, currentChatId]
   );
 
-  const messagesEndRef = React.useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const handleNewChat = () => {
     const newChat: Chat = {
@@ -44,7 +74,7 @@ export default function ChatApp() {
       title: `New Chat ${chats.length + 1}`,
       messages: [],
     };
-    setChats([newChat, ...chats]); // Thêm cuộc trò chuyện mới vào đầu mảng
+    setChats([newChat, ...chats]);
     setCurrentChatId(newChat.id);
   };
 
@@ -58,13 +88,12 @@ export default function ChatApp() {
       let updatedChats = [...chats];
 
       if (!chatId) {
-        // Tạo cuộc trò chuyện mới nếu chưa có cuộc trò chuyện nào được chọn
         const newChat: Chat = {
           id: Date.now().toString(),
-          title: inputMessage.trim(), // Sử dụng tin nhắn đầu tiên làm tiêu đề
+          title: inputMessage.trim(),
           messages: [],
         };
-        updatedChats = [newChat, ...updatedChats]; // Thêm cuộc trò chuyện mới vào đầu mảng
+        updatedChats = [newChat, ...updatedChats];
         chatId = newChat.id;
         setCurrentChatId(chatId);
       }
@@ -84,8 +113,19 @@ export default function ChatApp() {
       setChats(updatedChats);
       setInputMessage("");
 
-      // Xử lý logic gửi message đến backend hoặc AI service
-      // Sau đó thêm response vào mảng messages
+      setTimeout(() => {
+        const botResponse: Message = {
+          id: Date.now().toString(),
+          content: `**${KEYWORD}** is mentioned here.`,
+          sender: "bot",
+        };
+        const updatedChatsWithBotResponse = updatedChats.map((chat) =>
+          chat.id === chatId
+            ? { ...chat, messages: [...chat.messages, botResponse] }
+            : chat
+        );
+        setChats(updatedChatsWithBotResponse);
+      }, 1000);
     }
   };
 
@@ -93,8 +133,23 @@ export default function ChatApp() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     scrollToBottom();
+  }, [currentChat?.messages]);
+
+  useEffect(() => {
+    if (
+      currentChat?.messages.some(
+        (message) =>
+          message.sender === "bot" &&
+          typeof message.content === "string" &&
+          message.content.includes(KEYWORD)
+      )
+    ) {
+      setShowActionTab(true);
+    } else {
+      setShowActionTab(false);
+    }
   }, [currentChat?.messages]);
 
   return (
@@ -107,7 +162,7 @@ export default function ChatApp() {
       <div className="flex-1 flex flex-col h-full items-center">
         <ChatHeader />
         <div
-          className={`flex-1 flex flex-col overflow-hidden transition-all w-full  duration-700 ${
+          className={`flex-1 flex flex-col overflow-hidden transition-all w-full duration-700 ${
             open ? "" : "xl:w-[75vw]"
           }`}
         >
@@ -120,15 +175,19 @@ export default function ChatApp() {
                 }`}
               >
                 <div
-                  className={`message-bubble inline-block p-2 rounded-lg max-w-6xl  ${
+                  className={`message-bubble inline-block p-2 rounded-lg max-w-6xl ${
                     message.sender === "user"
                       ? "bg-primary text-primary-foreground xl:max-w-3xl"
                       : "bg-muted hover:bg-muted/80"
                   }`}
                 >
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {message.content}
-                  </ReactMarkdown>
+                  {message.sender === "bot" ? (
+                    <CustomMarkdown content={message.content} />
+                  ) : (
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {message.content as string}
+                    </ReactMarkdown>
+                  )}
                 </div>
               </div>
             ))}
