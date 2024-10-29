@@ -32,6 +32,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     setupWalletSelector({
       network: "testnet",
       modules: [setupMyNearWallet()],
+      languageCode: "en",
     }).then((selector) => {
       setSelector(selector);
       const modal = setupModal(selector, { contractId: "test.near" });
