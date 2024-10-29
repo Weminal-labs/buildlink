@@ -2,8 +2,9 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { setupWalletSelector } from "@near-wallet-selector/core";
-import { setupModal } from "@near-wallet-selector/modal-ui";
+import { setupModal, Theme } from "@near-wallet-selector/modal-ui";
 import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
+import { useTheme } from "next-themes";
 
 type WalletContextType = {
   selector: any;
@@ -27,7 +28,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
   const [modal, setModal] = useState<any>(null);
   const [accounts, setAccounts] = useState<any[]>([]);
   const [accountId, setAccountId] = useState<string | null>(null);
-
+  const { theme } = useTheme();
   useEffect(() => {
     setupWalletSelector({
       network: "testnet",
@@ -35,7 +36,10 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       languageCode: "en",
     }).then((selector) => {
       setSelector(selector);
-      const modal = setupModal(selector, { contractId: "test.near" });
+      const modal = setupModal(selector, {
+        contractId: "test.near",
+        theme: theme as Theme,
+      });
       setModal(modal);
 
       const state = selector.store.getState();
