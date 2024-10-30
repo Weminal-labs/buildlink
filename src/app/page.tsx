@@ -14,7 +14,7 @@ import remarkGfm from "remark-gfm";
 interface Message {
   id: string;
   content: string | React.ReactNode;
-  sender: "user" | "bot";
+  sender: "user" | "assistant";
 }
 
 interface Chat {
@@ -52,7 +52,7 @@ export default function EnhancedChatApp() {
             "- **Meta Pool**: Meta Pool provides liquid staking on NEAR, allowing users to stake NEAR and receive stNEAR, a liquid staking token. Users can earn rewards of approximately 10% APY, and the protocol integrates well with NEAR-based DeFi platforms.\n\n",
             "- **Everstake**: Everstake is a popular staking provider for NEAR, enabling users to delegate their tokens with a minimum of 5 NEAR and a maximum of 5,000 NEAR. This pool offers staking rewards and is known for its secure infrastructure and transparent operations.",
           ].join(""),
-          sender: "bot",
+          sender: "assistant",
         },
       ],
     },
@@ -113,11 +113,27 @@ export default function EnhancedChatApp() {
       setChats(updatedChats);
       setInputMessage("");
 
-      setTimeout(() => {
+      setTimeout(async () => {
+          const payload = {
+            chat_history: updatedChats.find(chat => chat.id === chatId)?.messages.map(msg => ({
+                content: msg.content,
+                role: msg.sender
+            })) || [],
+            question: inputMessage + " and help me markdown keyword of protocol"
+        };
+        const response = await fetch('http://localhost:3001/api/answer', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload, null, 2)
+        });
+        const data = await response.json();
+        console.log(data.keywords[0].keyword)
         const botResponse: Message = {
           id: Date.now().toString(),
-          content: `**${KEYWORD}** is mentioned here.`,
-          sender: "bot",
+          content: `**${data.keywords[0].keyword}** is mentioned here.`,
+          sender: "assistant",
         };
         const updatedChatsWithBotResponse = updatedChats.map((chat) =>
           chat.id === chatId
@@ -141,7 +157,7 @@ export default function EnhancedChatApp() {
     if (
       currentChat?.messages.some(
         (message) =>
-          message.sender === "bot" &&
+          message.sender === "assistant" &&
           typeof message.content === "string" &&
           message.content.includes(KEYWORD)
       )
@@ -181,7 +197,7 @@ export default function EnhancedChatApp() {
                       : "bg-muted hover:bg-muted/80"
                   }`}
                 >
-                  {message.sender === "bot" ? (
+                  {message.sender === "assistant" ? (
                     <CustomMarkdown content={message.content} />
                   ) : (
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
