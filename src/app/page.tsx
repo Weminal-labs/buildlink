@@ -57,25 +57,38 @@ export default function BuildlinkChat() {
     };
 
     const storedChats = localStorage.getItem("chats");
+    const storedChatId = localStorage.getItem("currentChatId");
 
     if (storedChats) {
       const parsedChats = JSON.parse(storedChats);
-      // Kiểm tra xem default chat đã tồn tại chưa
       const hasDefaultChat = parsedChats.some(
         (chat: Chat) => chat.id === defaultChat.id
       );
 
-      if (!hasDefaultChat) {
-        setChats([defaultChat, ...parsedChats]);
+      let updatedChats = hasDefaultChat
+        ? parsedChats
+        : [defaultChat, ...parsedChats];
+      setChats(updatedChats);
+
+      if (storedChatId) {
+        const chatExists = updatedChats.some(
+          (chat: Chat) => chat.id === storedChatId
+        );
+        if (chatExists) {
+          setCurrentChatId(storedChatId);
+        } else {
+          const newestChat = updatedChats.find(
+            (chat: Chat) => chat.id !== defaultChat.id
+          );
+          setCurrentChatId(newestChat ? newestChat.id : defaultChat.id);
+        }
       } else {
-        setChats(parsedChats);
+        setCurrentChatId(defaultChat.id);
       }
     } else {
       setChats([defaultChat]);
+      setCurrentChatId(defaultChat.id);
     }
-
-    setCurrentChatId(defaultChat.id);
-    localStorage.setItem("currentChatId", defaultChat.id);
   }, []);
 
   useEffect(() => {
@@ -143,7 +156,7 @@ export default function BuildlinkChat() {
               inputMessage +
               " if the question is related to blockchain and NEAR help me bold keyword, If the question mentions Near Staking, mention Linear Protocol, of course there are other options too",
           };
-          const response = await fetch("http://localhost:3001/api/answer", {
+          const response = await fetch("http://3.25.51.123/api/answer", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
