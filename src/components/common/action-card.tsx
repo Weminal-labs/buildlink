@@ -45,9 +45,8 @@ export default function ActionCard() {
   const [stakeAmount, setStakeAmount] = useState("");
   const [isStaking, setIsStaking] = useState(false);
   const protocol = protocolsInfo["LiNEAR Protocol"];
-  const { selector, modal, accountId } = useWallet();
-  const contractName = process.env.NEXT_PUBLIC_CONTRACT_NAME!;
-  const network = process.env.NEXT_PUBLIC_NEAR_NETWORK!;
+  const { selector, accountId } = useWallet();
+  const contractName = "linear-protocol.testnet";
 
   const handleStakeClick = (amount: string) => {
     setStakeAmount(amount);
@@ -179,9 +178,3 @@ export default function ActionCard() {
     </div>
   );
 }
-
-ActionCard.getInitialProps = async () => {
-  const contractName = process.env.NEXT_PUBLIC_CONTRACT_NAME!;
-  const network = process.env.NEXT_PUBLIC_NEAR_NETWORK!;
-  return { network, contractName };
-};
