@@ -10,6 +10,7 @@ import { AutoResizeTextarea } from "@/components/common/auto-resize-textarea";
 import { CustomMarkdown } from "@/components/common/custom-markdown";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import LoadingMessage from "@/components/common/loading-message";
 
 interface Message {
   id: string;
@@ -23,43 +24,29 @@ interface Chat {
   messages: Message[];
 }
 
-const KEYWORD = "NEAR";
-
-const ActionCard = ({ word }: { word: string }) => (
-  <div className="p-4 bg-primary text-primary-foreground rounded-lg">
-    <h3 className="font-bold mb-2">Action for: {word}</h3>
-    <p>This is a custom action for the keyword {word}.</p>
-  </div>
-);
-
 export default function EnhancedChatApp() {
   const { open } = useSidebar();
+  const [currentChatId, setCurrentChatId] = useState<string | null>();
+  const [inputMessage, setInputMessage] = useState("");
   const [chats, setChats] = useState<Chat[]>([
     {
       id: "1",
-      title: "Please give me the top protocol for staking on Near",
+      title: "What'is Buildlink ?",
       messages: [
         {
           id: "1",
-          content: "Please give me the top protocol for staking on Near",
+          content: "What'is Buildlink ?",
           sender: "user",
         },
         {
           id: "2",
-          content: [
-            "# Top Protocols for Staking on NEAR\n\n",
-            "- **LiNEAR Protocol**: LiNEAR Protocol offers liquid staking on NEAR, enabling users to stake NEAR tokens and receive stNEAR tokens. This allows users to earn around 10% APY while still participating in NEAR's DeFi ecosystem with their staked tokens.\n\n",
-            "- **Meta Pool**: Meta Pool provides liquid staking on NEAR, allowing users to stake NEAR and receive stNEAR, a liquid staking token. Users can earn rewards of approximately 10% APY, and the protocol integrates well with NEAR-based DeFi platforms.\n\n",
-            "- **Everstake**: Everstake is a popular staking provider for NEAR, enabling users to delegate their tokens with a minimum of 5 NEAR and a maximum of 5,000 NEAR. This pool offers staking rewards and is known for its secure infrastructure and transparent operations.",
-          ].join(""),
+          content:
+            "The AI project calculates and responds to information on the NEAR ecosystem, which can then be transaction directly on the NEAR blockchain in the returned results.",
           sender: "assistant",
         },
       ],
     },
   ]);
-  const [currentChatId, setCurrentChatId] = useState<string | null>("1");
-  const [inputMessage, setInputMessage] = useState("");
-  const [showActionTab, setShowActionTab] = useState(false);
 
   const currentChat = useMemo(
     () => chats.find((chat) => chat.id === currentChatId),
@@ -67,6 +54,8 @@ export default function EnhancedChatApp() {
   );
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleNewChat = () => {
     const newChat: Chat = {
@@ -90,7 +79,7 @@ export default function EnhancedChatApp() {
       if (!chatId) {
         const newChat: Chat = {
           id: Date.now().toString(),
-          title: inputMessage.trim(),
+          title: inputMessage.trim(), // Sử dụng tin nhắn đầu tiên làm tiêu đề
           messages: [],
         };
         updatedChats = [newChat, ...updatedChats];
@@ -112,35 +101,51 @@ export default function EnhancedChatApp() {
 
       setChats(updatedChats);
       setInputMessage("");
+      setIsLoading(true);
 
       setTimeout(async () => {
+        try {
           const payload = {
-            chat_history: updatedChats.find(chat => chat.id === chatId)?.messages.map(msg => ({
-                content: msg.content,
-                role: msg.sender
-            })) || [],
-            question: inputMessage + " and help me markdown keyword of protocol"
-        };
-        const response = await fetch('http://localhost:3001/api/answer', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload, null, 2)
-        });
-        const data = await response.json();
-        console.log(data.keywords[0].keyword)
-        const botResponse: Message = {
-          id: Date.now().toString(),
-          content: `**${data.keywords[0].keyword}** is mentioned here.`,
-          sender: "assistant",
-        };
-        const updatedChatsWithBotResponse = updatedChats.map((chat) =>
-          chat.id === chatId
-            ? { ...chat, messages: [...chat.messages, botResponse] }
-            : chat
-        );
-        setChats(updatedChatsWithBotResponse);
+            chat_history:
+              updatedChats
+                .find((chat) => chat.id === chatId)
+                ?.messages.map((msg) => ({
+                  content: msg.content,
+                  role: msg.sender,
+                })) || [],
+            question:
+              inputMessage +
+              " if the question is related to blockchain and NEAR help me bold keyword, If the question mentions Near Staking, mention Linear Protocol, of course there are other options too",
+          };
+          const response = await fetch("http://localhost:3001/api/answer", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload, null, 2),
+          });
+          const data = await response.json();
+          const formattedText = data.formattedText
+            .slice(1, -1)
+            .replace(/\\n\\n/g, "\n\n")
+            .replace(/\\n/g, "\n");
+          console.log(formattedText);
+          const botResponse: Message = {
+            id: Date.now().toString(),
+            content: formattedText,
+            sender: "assistant",
+          };
+          const updatedChatsWithBotResponse = updatedChats.map((chat) =>
+            chat.id === chatId
+              ? { ...chat, messages: [...chat.messages, botResponse] }
+              : chat
+          );
+          setChats(updatedChatsWithBotResponse);
+        } catch (error) {
+          console.error("Error:", error);
+        } finally {
+          setIsLoading(false);
+        }
       }, 1000);
     }
   };
@@ -151,21 +156,6 @@ export default function EnhancedChatApp() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [currentChat?.messages]);
-
-  useEffect(() => {
-    if (
-      currentChat?.messages.some(
-        (message) =>
-          message.sender === "assistant" &&
-          typeof message.content === "string" &&
-          message.content.includes(KEYWORD)
-      )
-    ) {
-      setShowActionTab(true);
-    } else {
-      setShowActionTab(false);
-    }
   }, [currentChat?.messages]);
 
   return (
@@ -207,6 +197,7 @@ export default function EnhancedChatApp() {
                 </div>
               </div>
             ))}
+            {isLoading && <LoadingMessage />}
             <div ref={messagesEndRef} />
           </ScrollArea>
           <div className="p-4 border-t">

@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/popover";
 import ReactMarkdown from "react-markdown";
 
-const KEYWORDS = ["LiNEAR Protocol"];
+const KEYWORDS = ["linear protocol"];
 
 export const CustomMarkdown = ({
   content,
@@ -19,10 +19,11 @@ export const CustomMarkdown = ({
 
     let lastIndex = 0;
     const elements = [];
+    const lowerText = text.toLowerCase();
 
     // Tìm tất cả các từ khóa trong text
     KEYWORDS.forEach((keyword) => {
-      const regex = new RegExp(`\\b${keyword}\\b`, "g");
+      const regex = new RegExp(`\\b${keyword}\\b`, "gi");
       let match;
 
       while ((match = regex.exec(text)) !== null) {
@@ -35,7 +36,7 @@ export const CustomMarkdown = ({
           );
         }
 
-        // Thêm keyword với highlighting
+        // Thêm keyword với highlighting, giữ nguyên định dạng gốc của text
         elements.push(
           <Popover key={`keyword-${match.index}`}>
             <PopoverTrigger>
