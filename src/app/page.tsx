@@ -28,37 +28,56 @@ export default function BuildlinkChat() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    const defaultChat: Chat = {
+      id: "default-chat",
+      title: "Buildlink Chat Guide",
+      messages: [
+        {
+          id: "default-message-1",
+          content: "👋 Hi! I'm Buildlink's AI assistant.",
+          sender: "assistant",
+        },
+        {
+          id: "default-message-2",
+          content: "How can I stake NEAR tokens?",
+          sender: "user",
+        },
+        {
+          id: "default-message-3",
+          content:
+            "To stake **NEAR** tokens, you can use **Linear Protocol** - one of the leading staking platforms on NEAR. Here are the steps:\n\n" +
+            "1. Access your NEAR wallet\n" +
+            "2. Connect to Linear Protocol\n" +
+            "3. Choose the amount of NEAR to stake\n" +
+            "4. Confirm the transaction\n\n" +
+            "You will receive stNEAR tokens corresponding to your staked NEAR amount.",
+          sender: "assistant",
+        },
+      ],
+    };
+
     const storedChats = localStorage.getItem("chats");
-    const storedChatId = localStorage.getItem("currentChatId");
 
     if (storedChats) {
       const parsedChats = JSON.parse(storedChats);
-      setChats(parsedChats);
+      // Kiểm tra xem default chat đã tồn tại chưa
+      const hasDefaultChat = parsedChats.some(
+        (chat: Chat) => chat.id === defaultChat.id
+      );
 
-      if (storedChatId) {
-        // Kiểm tra xem chat được lưu có tồn tại không
-        const chatExists = parsedChats.some(
-          (chat: Chat) => chat.id === storedChatId
-        );
-        if (chatExists) {
-          setCurrentChatId(storedChatId);
-        } else {
-          // Nếu chat không tồn tại, chọn chat đầu tiên nếu có
-          setCurrentChatId(parsedChats.length > 0 ? parsedChats[0].id : null);
-          localStorage.setItem(
-            "currentChatId",
-            parsedChats.length > 0 ? parsedChats[0].id : ""
-          );
-        }
-      } else if (parsedChats.length > 0) {
-        // Nếu không có currentChatId được lưu nhưng có chats, chọn chat đầu tiên
-        setCurrentChatId(parsedChats[0].id);
-        localStorage.setItem("currentChatId", parsedChats[0].id);
+      if (!hasDefaultChat) {
+        setChats([defaultChat, ...parsedChats]);
+      } else {
+        setChats(parsedChats);
       }
+    } else {
+      setChats([defaultChat]);
     }
+
+    setCurrentChatId(defaultChat.id);
+    localStorage.setItem("currentChatId", defaultChat.id);
   }, []);
 
-  // Cập nhật useEffect để lưu currentChatId
   useEffect(() => {
     localStorage.setItem("chats", JSON.stringify(chats));
     localStorage.setItem("currentChatId", currentChatId || "");
