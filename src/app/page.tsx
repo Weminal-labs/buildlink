@@ -24,29 +24,11 @@ interface Chat {
   messages: Message[];
 }
 
-export default function EnhancedChatApp() {
+export default function BuildlinkChat() {
   const { open } = useSidebar();
   const [currentChatId, setCurrentChatId] = useState<string | null>();
   const [inputMessage, setInputMessage] = useState("");
-  const [chats, setChats] = useState<Chat[]>([
-    {
-      id: "1",
-      title: "What'is Buildlink ?",
-      messages: [
-        {
-          id: "1",
-          content: "What'is Buildlink ?",
-          sender: "user",
-        },
-        {
-          id: "2",
-          content:
-            "The AI project calculates and responds to information on the NEAR ecosystem, which can then be transaction directly on the NEAR blockchain in the returned results.",
-          sender: "assistant",
-        },
-      ],
-    },
-  ]);
+  const [chats, setChats] = useState<Chat[]>([]);
 
   const currentChat = useMemo(
     () => chats.find((chat) => chat.id === currentChatId),
@@ -54,8 +36,18 @@ export default function EnhancedChatApp() {
   );
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const storedChats = localStorage.getItem("chats");
+    if (storedChats) {
+      setChats(JSON.parse(storedChats));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("chats", JSON.stringify(chats));
+  }, [chats]);
 
   const handleNewChat = () => {
     const newChat: Chat = {
@@ -79,7 +71,7 @@ export default function EnhancedChatApp() {
       if (!chatId) {
         const newChat: Chat = {
           id: Date.now().toString(),
-          title: inputMessage.trim(), // Sử dụng tin nhắn đầu tiên làm tiêu đề
+          title: inputMessage.trim(),
           messages: [],
         };
         updatedChats = [newChat, ...updatedChats];
@@ -129,7 +121,6 @@ export default function EnhancedChatApp() {
             .slice(1, -1)
             .replace(/\\n\\n/g, "\n\n")
             .replace(/\\n/g, "\n");
-          console.log(formattedText);
           const botResponse: Message = {
             id: Date.now().toString(),
             content: formattedText,
@@ -158,12 +149,18 @@ export default function EnhancedChatApp() {
     scrollToBottom();
   }, [currentChat?.messages]);
 
+  const handleDeleteChat = (id: string) => {
+    setChats(chats.filter((chat) => chat.id !== id));
+  };
+
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       <ChatSidebar
         chatHistory={chats}
+        currentChatId={currentChatId}
         onNewChat={handleNewChat}
         onSelectChat={handleSelectChat}
+        onDeleteChat={handleDeleteChat}
       />
       <div className="flex-1 flex flex-col h-full items-center">
         <ChatHeader />
