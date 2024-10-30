@@ -156,13 +156,16 @@ export default function BuildlinkChat() {
               inputMessage +
               " if the question is related to blockchain and NEAR help me bold keyword, If the question mentions Near Staking, mention Linear Protocol, of course there are other options too",
           };
-          const response = await fetch("http://3.25.51.123/api/answer", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload, null, 2),
-          });
+          const response = await fetch(
+            "https://buildlink.actionxapt.com/api/answer",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(payload, null, 2),
+            }
+          );
           const data = await response.json();
           const formattedText = data.formattedText
             .slice(1, -1)
