@@ -11,18 +11,7 @@ import { CustomMarkdown } from "@/components/common/custom-markdown";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import LoadingMessage from "@/components/common/loading-message";
-
-interface Message {
-  id: string;
-  content: string | React.ReactNode;
-  sender: "user" | "assistant";
-}
-
-interface Chat {
-  id: string;
-  title: string;
-  messages: Message[];
-}
+import { Chat, Message } from "@/types/chat";
 
 export default function BuildlinkChat() {
   const { open } = useSidebar();
@@ -40,14 +29,40 @@ export default function BuildlinkChat() {
 
   useEffect(() => {
     const storedChats = localStorage.getItem("chats");
+    const storedChatId = localStorage.getItem("currentChatId");
+
     if (storedChats) {
-      setChats(JSON.parse(storedChats));
+      const parsedChats = JSON.parse(storedChats);
+      setChats(parsedChats);
+
+      if (storedChatId) {
+        // Kiểm tra xem chat được lưu có tồn tại không
+        const chatExists = parsedChats.some(
+          (chat: Chat) => chat.id === storedChatId
+        );
+        if (chatExists) {
+          setCurrentChatId(storedChatId);
+        } else {
+          // Nếu chat không tồn tại, chọn chat đầu tiên nếu có
+          setCurrentChatId(parsedChats.length > 0 ? parsedChats[0].id : null);
+          localStorage.setItem(
+            "currentChatId",
+            parsedChats.length > 0 ? parsedChats[0].id : ""
+          );
+        }
+      } else if (parsedChats.length > 0) {
+        // Nếu không có currentChatId được lưu nhưng có chats, chọn chat đầu tiên
+        setCurrentChatId(parsedChats[0].id);
+        localStorage.setItem("currentChatId", parsedChats[0].id);
+      }
     }
   }, []);
 
+  // Cập nhật useEffect để lưu currentChatId
   useEffect(() => {
     localStorage.setItem("chats", JSON.stringify(chats));
-  }, [chats]);
+    localStorage.setItem("currentChatId", currentChatId || "");
+  }, [chats, currentChatId]);
 
   const handleNewChat = () => {
     const newChat: Chat = {
@@ -150,7 +165,23 @@ export default function BuildlinkChat() {
   }, [currentChat?.messages]);
 
   const handleDeleteChat = (id: string) => {
-    setChats(chats.filter((chat) => chat.id !== id));
+    setChats((prevChats) => {
+      const newChats = prevChats.filter((chat) => chat.id !== id);
+
+      // Nếu xóa chat đang được chọn
+      if (id === currentChatId) {
+        // Chọn chat đầu tiên nếu còn chat nào
+        if (newChats.length > 0) {
+          setCurrentChatId(newChats[0].id);
+          localStorage.setItem("currentChatId", newChats[0].id);
+        } else {
+          setCurrentChatId(null);
+          localStorage.setItem("currentChatId", "");
+        }
+      }
+
+      return newChats;
+    });
   };
 
   return (
