@@ -1,7 +1,14 @@
+"use client";
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Loader2 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
+import { setGreeting } from "@/contracts/greeting-contract";
+import { useWallet } from "@/components/providers/near-wallet-provider";
+import { Toast } from "@/components/ui/toast";
 
 interface ProtocolInfo {
   name: string;
@@ -34,13 +41,71 @@ const protocolsInfo: Record<string, ProtocolInfo> = {
     description: "Professional staking provider for PoS networks",
   },
 };
-
-export default function ActionCard({ protocolName = "LiNEAR Protocol" }) {
+export default function ActionCard() {
   const [stakeAmount, setStakeAmount] = useState("");
-  const protocol = protocolsInfo[protocolName];
+  const [isStaking, setIsStaking] = useState(false);
+  const protocol = protocolsInfo["LiNEAR Protocol"];
+  const { selector, modal, accountId } = useWallet();
+  const contractName = process.env.NEXT_PUBLIC_CONTRACT_NAME!;
+  const network = process.env.NEXT_PUBLIC_NEAR_NETWORK!;
 
   const handleStakeClick = (amount: string) => {
     setStakeAmount(amount);
+  };
+
+  const handleStakeSubmit = async () => {
+    if (!selector) {
+      toast({
+        title: "Wallet not connected",
+        description: "Please connect your NEAR wallet to stake",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!stakeAmount || parseFloat(stakeAmount) <= 0) {
+      Toast({
+        title: "Invalid amount",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setIsStaking(true);
+      const wallet = await selector.wallet();
+
+      // Convert NEAR amount to yoctoNEAR (1 NEAR = 10^24 yoctoNEAR)
+      const yoctoAmount =
+        BigInt(Math.round(parseFloat(stakeAmount) * 1e6)) * BigInt(1e18);
+
+      await setGreeting(
+        selector,
+        contractName,
+        accountId as string,
+        yoctoAmount.toString()
+      );
+
+      const transactionHash = new URLSearchParams(window.location.search).get(
+        "transactionHashes"
+      );
+
+      toast({
+        title: "Stake successful",
+        description: `Successfully staked ${stakeAmount} NEAR. Transaction Hash: ${transactionHash}`,
+      });
+      setStakeAmount("");
+    } catch (error) {
+      console.error("Staking failed:", error);
+      toast({
+        title: "Staking failed",
+        description:
+          error instanceof Error ? error.message : "Failed to stake NEAR",
+        variant: "destructive",
+      });
+    } finally {
+      setIsStaking(false);
+    }
   };
 
   if (!protocol) return null;
@@ -79,6 +144,7 @@ export default function ActionCard({ protocolName = "LiNEAR Protocol" }) {
               variant="outline"
               onClick={() => handleStakeClick(value.toString())}
               className="flex-1"
+              disabled={isStaking}
             >
               {value} NEAR
             </Button>
@@ -91,10 +157,31 @@ export default function ActionCard({ protocolName = "LiNEAR Protocol" }) {
             value={stakeAmount}
             onChange={(e) => setStakeAmount(e.target.value)}
             className="flex-1"
+            disabled={isStaking}
+            min={protocol.minStake}
           />
-          <Button className="whitespace-nowrap">Stake Now</Button>
+          <Button
+            onClick={handleStakeSubmit}
+            disabled={isStaking || !stakeAmount}
+            className="whitespace-nowrap"
+          >
+            {isStaking ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Staking...
+              </>
+            ) : (
+              "Stake Now"
+            )}
+          </Button>
         </div>
       </div>
     </div>
   );
 }
+
+ActionCard.getInitialProps = async () => {
+  const contractName = process.env.NEXT_PUBLIC_CONTRACT_NAME!;
+  const network = process.env.NEXT_PUBLIC_NEAR_NETWORK!;
+  return { network, contractName };
+};
