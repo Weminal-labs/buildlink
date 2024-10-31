@@ -1,3 +1,3 @@
-# BuildLink on NEAR
+# BuildLink on Aptos
 
-starci-lab cut'
+# actionx-buildlink
