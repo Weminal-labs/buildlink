@@ -1,0 +1,3 @@
+[submodule "buildlink-backend"]
+	path = buildlink-backend
+	url = https://github.com/Weminal-labs/buildlink-backend.git
