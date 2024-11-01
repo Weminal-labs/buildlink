@@ -30,7 +30,7 @@ We were inspired to create a platform that simplifies blockchain interactions fo
 ---
 ### **Project Logo**
 
-<img src="./public/buildlink-black-logo.png" alt="Buildlink Logo" />
+<img src="https://peach-realistic-spider-498.mypinata.cloud/ipfs/QmR23ZZRzXHbaphhE4i5dYV82K7VMXjB7RMb8TmGETzVhB" alt="Buildlink Logo" />
 
 
 
