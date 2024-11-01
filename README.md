@@ -82,31 +82,40 @@ We are developing an AI-integrated web-based application to easily onboard web2 
 ## **Team Information**
 
 - Anh Phạm  
-  **Role**: Project management  
-  **Github**: https://github.com/SaitamaCoderVN  
-  **Email**: coderhopham@gmail.com  
+  - **Role**: Project management
+  
+  - **Github**: [SaitamaCoderVN](https://github.com/SaitamaCoderVN)
+  
+  - **Email**: coderhopham@gmail.com
 
-- Louis Vương  
-  **Role**: Front End Engineer
-  **Github**:   
-  **Email**:   
+- Lou1s
+  
+  - **Role**: Front End Engineer
+  
+  - **Github**: [Lou1sVuong](https://github.com/Lou1sVuong)
+  
+  - **Email**:  lou1svuong.dev@gmail.com
 
 - Andrew  
-  **Role**: Back End Engineer
+  - **Role**: Back End Engineer
   
-  **Github**: https://github.com/chauanhtuan185
+  - **Github**: [chauanhtuan185](https://github.com/chauanhtuan185)
    
-  **Email**: chauanhtuan185@gmail.com
+  - **Email**: chauanhtuan185@gmail.com
 
 - Tính Nguyễn  
-  **Role**: AI Engineer   
-  **Github**:   
-  **Email**:  
+  - **Role**: AI Engineer
+  
+  - **Github**:   
+
+  - **Email**:  
 
 - Pichtran
-  **Role**: Smart Contract Engineer   
-  **Github**:   
-  **Email**: 
+  - **Role**: Smart Contract Engineer
+  
+  - **Github**: [0xBoji](https://github.com/0xBoji)
+  
+  - **Email**: 
 ---
 # **Material for Demo**
 **Details**
