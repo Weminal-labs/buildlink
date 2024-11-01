@@ -59,7 +59,7 @@ Features:
 
 ## **Technical Architecture**
 
-<img src="./BUILDLINK/public/buildlink-architecture.png" alt="Architecture Buildlink" />
+<img src="https://peach-realistic-spider-498.mypinata.cloud/ipfs/QmNkEf76Laiz35D964QVx6dmDJsMDrUXHfs6EJPPrB6Dae" alt="Architecture Buildlink" />
 
 ---
 
