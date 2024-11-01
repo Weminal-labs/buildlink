@@ -81,41 +81,14 @@ We are developing an AI-integrated web-based application to easily onboard web2 
 
 ## **Team Information**
 
-- Anh Phạm  
-  - **Role**: Project management
-  
-  - **Github**: [SaitamaCoderVN](https://github.com/SaitamaCoderVN)
-  
-  - **Email**: coderhopham@gmail.com
+| **Name**         | **Role**             | **Github**                              | **Email**                  |
+|-------------------|----------------------|----------------------------------------|----------------------------|
+| Anh Phạm         | Project Management   | [SaitamaCoderVN](https://github.com/SaitamaCoderVN) | coderhopham@gmail.com      |
+| Lou1s            | Front End Engineer   | [Lou1sVuong](https://github.com/Lou1sVuong)          | lou1svuong.dev@gmail.com   |
+| Andrew           | Back End Engineer    | [chauanhtuan185](https://github.com/chauanhtuan185) | chauanhtuan185@gmail.com   |
+| Tính Nguyễn      | AI Engineer          |                                          |                            |
+| Pichtran         | Smart Contract Engineer | [0xBoji](https://github.com/0xBoji)|                            |
 
-- Lou1s
-  
-  - **Role**: Front End Engineer
-  
-  - **Github**: [Lou1sVuong](https://github.com/Lou1sVuong)
-  
-  - **Email**:  lou1svuong.dev@gmail.com
-
-- Andrew  
-  - **Role**: Back End Engineer
-  
-  - **Github**: [chauanhtuan185](https://github.com/chauanhtuan185)
-   
-  - **Email**: chauanhtuan185@gmail.com
-
-- Tính Nguyễn  
-  - **Role**: AI Engineer
-  
-  - **Github**:   
-
-  - **Email**:  
-
-- Pichtran
-  - **Role**: Smart Contract Engineer
-  
-  - **Github**: [0xBoji](https://github.com/0xBoji)
-  
-  - **Email**: 
 ---
 # **Material for Demo**
 **Details**
