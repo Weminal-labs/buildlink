@@ -69,7 +69,7 @@ Features:
 - ***AI Processing & Chat Generation:*** The AI system processes the requests and generates responses.
 - ***Run & Interact with DAPP:*** Users can run and interact with decentralized applications (dapps) directly on the platform.
 
-<img src="https://peach-realistic-spider-498.mypinata.cloud/ipfs/QmNkEf76Laiz35D964QVx6dmDJsMDrUXHfs6EJPPrB6Dae" alt="Page View Buildlink" />
+<img src="https://peach-realistic-spider-498.mypinata.cloud/ipfs/QmT37bHXS9W83eUWSE9sT8wa3QYCoMzAvcSJ5BBtvQLdqk" alt="Page View Buildlink" />
 
 ---
 
