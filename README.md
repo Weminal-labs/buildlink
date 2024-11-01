@@ -114,4 +114,4 @@ We are developing an AI-integrated web-based application to easily onboard web2 
 
 # BuildLink on NEAR
 
-starci-lab cut'
+# actionx-buildlink
