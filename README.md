@@ -93,8 +93,8 @@ We are developing an AI-integrated web-based application to easily onboard web2 
 
 - Andrew  
   **Role**: Back End Engineer 
-  **Github**:   
-  **Email**:   
+  **Github**: https://github.com/chauanhtuan185
+  **Email**: chauanhtuan185@gmail.com
 
 - Tính Nguyễn  
   **Role**: AI Engineer   
